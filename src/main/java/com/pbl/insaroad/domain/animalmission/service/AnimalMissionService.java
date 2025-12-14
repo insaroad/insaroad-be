@@ -1,0 +1,95 @@
+package com.pbl.insaroad.domain.animalmission.service;
+
+import java.util.*;
+
+import org.springframework.stereotype.Service;
+
+import com.pbl.insaroad.domain.animalmission.data.Crane;
+import com.pbl.insaroad.domain.animalmission.data.Haetae;
+import com.pbl.insaroad.domain.animalmission.data.Magpie;
+import com.pbl.insaroad.domain.animalmission.data.Tiger;
+import com.pbl.insaroad.domain.animalmission.data.Turtle;
+import com.pbl.insaroad.domain.animalmission.dto.request.AnimalMissionSubmitRequest;
+import com.pbl.insaroad.domain.animalmission.dto.response.AnimalResultResponse;
+import com.pbl.insaroad.domain.animalmission.entity.AnimalType;
+import com.pbl.insaroad.domain.animalmission.exception.AnimalMissionErrorCode;
+import com.pbl.insaroad.global.exception.CustomException;
+
+@Service
+public class AnimalMissionService {
+
+  // 동물 타입별 결과 응답을 저장하는 Map
+  private static final Map<AnimalType, AnimalResultResponse> ANIMAL_RESULTS = new HashMap<>();
+
+  static {
+    ANIMAL_RESULTS.put(AnimalType.TIGER, Tiger.CONTENT);
+    ANIMAL_RESULTS.put(AnimalType.MAGPIE, Magpie.CONTENT);
+    ANIMAL_RESULTS.put(AnimalType.HAETAE, Haetae.CONTENT);
+    ANIMAL_RESULTS.put(AnimalType.CRANE, Crane.CONTENT);
+    ANIMAL_RESULTS.put(AnimalType.TURTLE, Turtle.CONTENT);
+  }
+
+  // 동물 미션 제출 처리 메서드
+  public AnimalResultResponse submitAnimalMission(AnimalMissionSubmitRequest request) {
+    // 0. patternAnimals 중복 검증
+    validateNoDuplicatePatternAnimals(request.getPatternAnimals());
+
+    // 1. 동물별 점수 집계
+    Map<AnimalType, Integer> scoreMap = calculateScores(request);
+
+    // 2. 최고 점수 계산
+    int maxScore = scoreMap.values().stream().mapToInt(Integer::intValue).max().orElse(0);
+
+    // 3. 최고 점수를 가진 동물들 찾기
+    long countMaxScore = scoreMap.values().stream().filter(score -> score == maxScore).count();
+
+    // 4. 동점 처리: 2개 이상이면 paintingAnimal 반환
+    AnimalType resultAnimal;
+    if (countMaxScore >= 2) {
+      resultAnimal = request.getPaintingAnimal();
+    } else {
+      // 단일 최고 점수인 경우 해당 동물 반환
+      resultAnimal =
+          scoreMap.entrySet().stream()
+              .filter(entry -> entry.getValue() == maxScore)
+              .map(Map.Entry::getKey)
+              .findFirst()
+              .orElse(request.getPaintingAnimal());
+    }
+
+    return ANIMAL_RESULTS.get(resultAnimal);
+  }
+
+  // patternAnimals에 중복된 동물이 없는지 검증하는 메서드
+  private void validateNoDuplicatePatternAnimals(List<AnimalType> patternAnimals) {
+    Set<AnimalType> uniqueAnimals = new HashSet<>(patternAnimals);
+    if (uniqueAnimals.size() != patternAnimals.size()) {
+      throw new CustomException(AnimalMissionErrorCode.DUPLICATE_PATTERN_ANIMALS);
+    }
+  }
+
+  // 동물별 점수를 계산하는 메서드
+  private Map<AnimalType, Integer> calculateScores(AnimalMissionSubmitRequest request) {
+    Map<AnimalType, Integer> scoreMap = new HashMap<>();
+
+    // 초기화: 모든 동물 타입을 0점으로 설정
+    for (AnimalType animalType : AnimalType.values()) {
+      scoreMap.put(animalType, 0);
+    }
+
+    // 문양 선택 점수 (2개)
+    for (AnimalType patternAnimal : request.getPatternAnimals()) {
+      scoreMap.put(patternAnimal, scoreMap.get(patternAnimal) + 1);
+    }
+
+    // 입구 행동 선택 점수 (1개)
+    AnimalType entranceAnimal = request.getEntranceAnimal();
+    scoreMap.put(entranceAnimal, scoreMap.get(entranceAnimal) + 1);
+
+    // 민화 그림 선택 점수 (1개)
+    AnimalType paintingAnimal = request.getPaintingAnimal();
+    scoreMap.put(paintingAnimal, scoreMap.get(paintingAnimal) + 1);
+
+    return scoreMap;
+  }
+}
