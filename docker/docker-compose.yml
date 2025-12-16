@@ -1,0 +1,69 @@
+services:
+  app:
+    image: ${DOCKER_USERNAME}/${DOCKER_REPO}:latest
+    container_name: insaroad
+    expose:
+      - "8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - insaroad-network
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    expose:
+      - "3306"
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - insaroad-network
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /home/ubuntu/nginx/conf.d:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /home/ubuntu/nginx/.htpasswd:/etc/nginx/.htpasswd:ro
+    depends_on:
+      - app
+      - dozzle
+    networks:
+      - insaroad-network
+    restart: unless-stopped
+
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - insaroad-network
+    restart: unless-stopped
+
+networks:
+  insaroad-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
