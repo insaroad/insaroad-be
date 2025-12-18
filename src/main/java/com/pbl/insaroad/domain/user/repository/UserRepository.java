@@ -3,6 +3,7 @@
  */
 package com.pbl.insaroad.domain.user.repository;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   @Query("select u.code from User u")
   Set<String> findAllCodes();
+
+  Optional<User> findByCode(String code);
 }
