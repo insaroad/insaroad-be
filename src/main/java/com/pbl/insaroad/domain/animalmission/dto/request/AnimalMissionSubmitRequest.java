@@ -1,3 +1,6 @@
+/* 
+ * Copyright (c) SKU PBL Team4 
+ */
 package com.pbl.insaroad.domain.animalmission.dto.request;
 
 import java.util.List;
