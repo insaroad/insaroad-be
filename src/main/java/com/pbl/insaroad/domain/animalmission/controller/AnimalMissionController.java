@@ -1,3 +1,6 @@
+/* 
+ * Copyright (c) SKU PBL Team4 
+ */
 package com.pbl.insaroad.domain.animalmission.controller;
 
 import jakarta.validation.Valid;

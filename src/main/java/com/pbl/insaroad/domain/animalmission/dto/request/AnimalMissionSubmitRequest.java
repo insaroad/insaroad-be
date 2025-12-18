@@ -1,7 +1,11 @@
+/* 
+ * Copyright (c) SKU PBL Team4 
+ */
 package com.pbl.insaroad.domain.animalmission.dto.request;
 
 import java.util.List;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -17,6 +21,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Schema(description = "동물 미션 테스트 결과 제출 요청")
 public class AnimalMissionSubmitRequest {
+
+  @NotBlank(message = "사용자 코드는 필수입니다.")
+  @Schema(description = "사용자 코드 (3자리)", example = "123")
+  private String userCode;
 
   @NotNull @Size(min = 2, max = 2, message = "문양은 2개를 선택해야 합니다.")
   @Schema(description = "문양 선택 (2개)", example = "[\"TIGER\", \"CRANE\"]")

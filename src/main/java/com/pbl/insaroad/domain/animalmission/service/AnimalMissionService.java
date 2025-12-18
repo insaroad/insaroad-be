@@ -1,8 +1,12 @@
+/* 
+ * Copyright (c) SKU PBL Team4 
+ */
 package com.pbl.insaroad.domain.animalmission.service;
 
 import java.util.*;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pbl.insaroad.domain.animalmission.data.Crane;
 import com.pbl.insaroad.domain.animalmission.data.Haetae;
@@ -13,13 +17,20 @@ import com.pbl.insaroad.domain.animalmission.dto.request.AnimalMissionSubmitRequ
 import com.pbl.insaroad.domain.animalmission.dto.response.AnimalResultResponse;
 import com.pbl.insaroad.domain.animalmission.entity.AnimalType;
 import com.pbl.insaroad.domain.animalmission.exception.AnimalMissionErrorCode;
+import com.pbl.insaroad.domain.user.entity.User;
+import com.pbl.insaroad.domain.user.repository.UserRepository;
 import com.pbl.insaroad.global.exception.CustomException;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AnimalMissionService {
 
   // 동물 타입별 결과 응답을 저장하는 Map
   private static final Map<AnimalType, AnimalResultResponse> ANIMAL_RESULTS = new HashMap<>();
+
+  private final UserRepository userRepository;
 
   static {
     ANIMAL_RESULTS.put(AnimalType.TIGER, Tiger.CONTENT);
@@ -30,9 +41,21 @@ public class AnimalMissionService {
   }
 
   // 동물 미션 제출 처리 메서드
+  @Transactional
   public AnimalResultResponse submitAnimalMission(AnimalMissionSubmitRequest request) {
     // 0. patternAnimals 중복 검증
     validateNoDuplicatePatternAnimals(request.getPatternAnimals());
+
+    // 사용자 조회
+    User user =
+        userRepository
+            .findByCode(request.getUserCode())
+            .orElseThrow(() -> new CustomException(AnimalMissionErrorCode.USER_NOT_FOUND));
+
+    // 사용자 스테이지 검증
+    if (user.getStage() != 3) {
+      throw new CustomException(AnimalMissionErrorCode.USER_NOT_STAGE_3);
+    }
 
     // 1. 동물별 점수 집계
     Map<AnimalType, Integer> scoreMap = calculateScores(request);
@@ -56,6 +79,10 @@ public class AnimalMissionService {
               .findFirst()
               .orElse(request.getPaintingAnimal());
     }
+
+    // 스테이지가 3이면 미션 완료 처리
+    user.completeMission();
+    userRepository.save(user);
 
     return ANIMAL_RESULTS.get(resultAnimal);
   }
