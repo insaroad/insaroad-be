@@ -22,13 +22,12 @@ public class GameRequest {
     @NotBlank private String userCode;
   }
 
-  /** 게임 1회 완료 처리 요청 - 첫 시작이면 userCode = null 허용 */
   @Getter
   @NoArgsConstructor
   @AllArgsConstructor
   public static class CompleteRequest {
 
-    private String userCode;
+    @NotBlank private String userCode;
 
     @NotNull private Long currentLocationId;
   }

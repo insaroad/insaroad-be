@@ -16,6 +16,7 @@ import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.CompleteResponse;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.FinishResponse;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.GameProgressResponse;
+import com.pbl.insaroad.domain.game.dto.response.GameResponse.StartResponse;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.UnvisitedResponse;
 import com.pbl.insaroad.domain.game.exception.GameErrorCode;
 import com.pbl.insaroad.domain.location.dto.LocationResponse;
@@ -46,6 +47,19 @@ public class UserService {
 
   private final TicketService ticketService;
   private final TicketQrPayloadFactory qrPayloadFactory;
+
+  public StartResponse startNewGame() {
+    User user = createUser(); // stage 기본값 1
+
+    return StartResponse.builder().userCode(user.getCode()).startStage(user.getStage()).build();
+  }
+
+  @Transactional(readOnly = true)
+  public StartResponse startResumeGame(String userCode) {
+    User user = getUserByCodeOrThrow(userCode);
+
+    return StartResponse.builder().userCode(user.getCode()).startStage(user.getStage()).build();
+  }
 
   public User createUser() {
     String code = generateUniqueCode();
@@ -97,53 +111,46 @@ public class UserService {
   @Transactional
   public GameProgressResponse completeGame(CompleteRequest request) {
 
-    // 현재 위치 존재 확인
-    Location current =
-        locationRepository
-            .findById(request.getCurrentLocationId())
-            .orElseThrow(() -> new CustomException(GameErrorCode.LOCATION_NOT_FOUND));
+    // 1) 유저 확보
+    User user = getUserByCodeOrThrow(request.getUserCode());
 
-    // 첫 시작이면 생성
-    User user =
-        (request.getUserCode() == null || request.getUserCode().isBlank())
-            ? createUser()
-            : getUserByCodeOrThrow(request.getUserCode());
+    // 2) location 기록(있으면)
+    if (request.getCurrentLocationId() != null) {
+      Location current =
+          locationRepository
+              .findById(request.getCurrentLocationId())
+              .orElseThrow(() -> new CustomException(GameErrorCode.LOCATION_NOT_FOUND));
 
-    // 방문 처리 (중복이면 무시)
-    user.addVisitedLocationId(current.getId());
+      user.addVisitedLocationId(current.getId());
+    }
 
-    // 남은 곳 전체 조회
-    List<Location> unvisited = locationRepository.findAllUnvisitedByUserId(user.getId());
+    // 3) 이번 요청이 “현재 stage 게임을 완료했다”는 전제로 stage 진행
+    int currentStage = user.getStage();
 
-    // 미션 완료가 아니라면: CompleteResponse 반환
-    if (!unvisited.isEmpty()) {
-      CompleteResponse complete =
-          CompleteResponse.builder()
-              .userCode(user.getCode())
-              .unvisitedLocations(unvisited.stream().map(LocationResponse::from).toList())
+    if (currentStage >= 3) {
+      // stage3 완료로 간주하고 finish 응답(티켓은 issueNewTicket이 막아줌)
+      Ticket ticket = ticketService.issueNewTicket(user.getId());
+      FinishResponse finish =
+          FinishResponse.builder()
+              .exchangeUrl(qrPayloadFactory.create(ticket.getToken()))
+              .issuedAt(ticket.getCreatedAt())
               .build();
 
-      return GameProgressResponse.builder()
-          .completed(false)
-          .complete(complete)
-          .finish(null)
-          .build();
+      return GameProgressResponse.builder().completed(true).complete(null).finish(finish).build();
     }
 
-    // 이번 요청으로 전체 미션 완료됨 → finish 로직 수행
-    if (!user.isCompleted()) {
-      user.completeMission();
-    }
+    // stage 1/2 완료 처리 → 다음 stage로
+    user.nextStage();
 
-    Ticket ticket = ticketService.issueNewTicket(user.getId());
+    List<Location> unvisited = findUnvisitedLocations(user);
 
-    FinishResponse finish =
-        FinishResponse.builder()
-            .exchangeUrl(qrPayloadFactory.create(ticket.getToken()))
-            .issuedAt(ticket.getCreatedAt())
+    CompleteResponse complete =
+        CompleteResponse.builder()
+            .userCode(user.getCode())
+            .unvisitedLocations(unvisited.stream().map(LocationResponse::from).toList())
             .build();
 
-    return GameProgressResponse.builder().completed(true).complete(null).finish(finish).build();
+    return GameProgressResponse.builder().completed(false).complete(complete).finish(null).build();
   }
 
   /* =========================

@@ -14,6 +14,16 @@ import lombok.Getter;
 /** Game 관련 응답 DTO 모음 */
 public class GameResponse {
 
+  @Getter
+  @Builder
+  public static class StartResponse {
+
+    private String userCode;
+
+    /** 사용자가 지금 시작해야 하는 스테이지 */
+    private int startStage;
+  }
+
   /** 미방문 Location 전체 조회 응답 */
   @Getter
   @Builder

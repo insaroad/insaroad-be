@@ -6,13 +6,16 @@ package com.pbl.insaroad.domain.game.controller;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
 import com.pbl.insaroad.domain.game.dto.request.GameRequest.UnvisitedRequest;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.GameProgressResponse;
+import com.pbl.insaroad.domain.game.dto.response.GameResponse.StartResponse;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.UnvisitedResponse;
 import com.pbl.insaroad.global.response.BaseResponse;
 
@@ -22,6 +25,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Game", description = "게임 관련 API")
 @RequestMapping("/api/games")
 public interface GameController {
+
+  @Operation(
+      summary = "새로 시작하기",
+      description = "새 사용자 코드를 발급하고 시작 스테이지(기본 1)를 반환합니다. - LocalStorage에 저장 필요")
+  @PostMapping("/start")
+  BaseResponse<StartResponse> startNew();
+
+  @Operation(summary = "이어서 시작하기", description = "사용자 코드를 기반으로 현재 진행 스테이지를 조회하여 반환합니다.")
+  @GetMapping("/start")
+  BaseResponse<StartResponse> resume(@RequestParam("userCode") String userCode);
 
   @PostMapping("/unvisited")
   @Operation(

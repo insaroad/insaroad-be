@@ -3,7 +3,11 @@
  */
 package com.pbl.insaroad.domain.animalmission.service;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +21,6 @@ import com.pbl.insaroad.domain.animalmission.dto.request.AnimalMissionSubmitRequ
 import com.pbl.insaroad.domain.animalmission.dto.response.AnimalResultResponse;
 import com.pbl.insaroad.domain.animalmission.entity.AnimalType;
 import com.pbl.insaroad.domain.animalmission.exception.AnimalMissionErrorCode;
-import com.pbl.insaroad.domain.user.entity.User;
 import com.pbl.insaroad.domain.user.repository.UserRepository;
 import com.pbl.insaroad.global.exception.CustomException;
 
@@ -46,17 +49,6 @@ public class AnimalMissionService {
     // 0. patternAnimals 중복 검증
     validateNoDuplicatePatternAnimals(request.getPatternAnimals());
 
-    // 사용자 조회
-    User user =
-        userRepository
-            .findByCode(request.getUserCode())
-            .orElseThrow(() -> new CustomException(AnimalMissionErrorCode.USER_NOT_FOUND));
-
-    // 사용자 스테이지 검증
-    if (user.getStage() != 3) {
-      throw new CustomException(AnimalMissionErrorCode.USER_NOT_STAGE_3);
-    }
-
     // 1. 동물별 점수 집계
     Map<AnimalType, Integer> scoreMap = calculateScores(request);
 
@@ -79,10 +71,6 @@ public class AnimalMissionService {
               .findFirst()
               .orElse(request.getPaintingAnimal());
     }
-
-    // 스테이지가 3이면 미션 완료 처리
-    user.completeMission();
-    userRepository.save(user);
 
     return ANIMAL_RESULTS.get(resultAnimal);
   }

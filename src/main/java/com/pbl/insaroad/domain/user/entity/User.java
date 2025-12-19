@@ -37,6 +37,10 @@ public class User {
   @Column(name = "code", length = 3, nullable = false, unique = true)
   private String code;
 
+  @Builder.Default
+  @Column(name = "stage", nullable = false)
+  private int stage = 1;
+
   /** 방문한 Location ID 리스트 - 연관관계 없이 단순 ID(Long) 목록 저장 - 방문 순서 보존 */
   @Builder.Default
   @ElementCollection
@@ -62,6 +66,12 @@ public class User {
 
   public void receiveReward() {
     this.rewardReceived = true;
+  }
+
+  public void nextStage() {
+    if (this.stage < 3) {
+      this.stage += 1;
+    }
   }
 
   /** 방문 LocationId 추가 - 이미 방문한 곳이면 무시(중복 방지) */

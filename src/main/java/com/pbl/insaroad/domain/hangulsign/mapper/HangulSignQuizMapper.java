@@ -46,12 +46,7 @@ public class HangulSignQuizMapper {
         .build();
   }
 
-  public AnswerResponse toAnswerResponse(
-      boolean isCorrect, String answerImageUrl, Integer currentStage) {
-    return AnswerResponse.builder()
-        .isCorrect(isCorrect)
-        .answerImageUrl(answerImageUrl)
-        .currentStage(currentStage)
-        .build();
+  public AnswerResponse toAnswerResponse(boolean isCorrect, String answerImageUrl) {
+    return AnswerResponse.builder().isCorrect(isCorrect).answerImageUrl(answerImageUrl).build();
   }
 }
