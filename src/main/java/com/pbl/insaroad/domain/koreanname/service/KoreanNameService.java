@@ -28,8 +28,7 @@ public class KoreanNameService {
   private final UserService userService;
 
   @Transactional(readOnly = true)
-  public KoreanNameResponse recommendName(
-      KoreanNameRequest request, CompleteRequest completeRequest) {
+  public KoreanNameResponse recommendName(KoreanNameRequest request) {
     String systemPrompt =
         """
             당신은 한국의 사주명리 전문가이자 이름 작명가입니다.
@@ -83,15 +82,16 @@ public class KoreanNameService {
     KoreanNameAiResponse aiResponse =
         koreanNameAiClient.requestKoreanName(systemPrompt, userPrompt);
 
-    int stage = userService.getStageByUserCode(completeRequest.getUserCode());
+    int stage = userService.getStageByUserCode(request.getCompleteRequest().getUserCode());
     if (stage == 1) {
       userService.completeGame(
           new CompleteRequest(
-              completeRequest.getUserCode(), completeRequest.getCurrentLocationId()));
+              request.getCompleteRequest().getUserCode(),
+              request.getCompleteRequest().getCurrentLocationId()));
     } else {
       log.info(
           "[KoreanName] userCode={} stage={} -> completeGame skip",
-          completeRequest.getUserCode(),
+          request.getCompleteRequest().getUserCode(),
           stage);
     }
     return KoreanNameMapper.toResponse(aiResponse);

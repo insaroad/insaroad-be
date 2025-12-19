@@ -5,6 +5,7 @@ package com.pbl.insaroad.domain.koreanname.dto.request;
 
 import java.time.LocalDate;
 
+import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
 import com.pbl.insaroad.domain.koreanname.entity.Gender;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,4 +20,6 @@ public class KoreanNameRequest {
 
   @Schema(description = "성별(MALE/FEMALE)", example = "MALE")
   private Gender gender;
+
+  private CompleteRequest completeRequest;
 }
