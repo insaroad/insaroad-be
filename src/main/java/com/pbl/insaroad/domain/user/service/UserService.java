@@ -174,4 +174,10 @@ public class UserService {
     }
     return locationRepository.findAllUnvisitedByUserId(user.getId());
   }
+
+  @Transactional(readOnly = true)
+  public int getStageByUserCode(String userCode) {
+    User user = getUserByCodeOrThrow(userCode);
+    return user.getStage();
+  }
 }

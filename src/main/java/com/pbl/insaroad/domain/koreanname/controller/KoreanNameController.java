@@ -4,8 +4,12 @@
 package com.pbl.insaroad.domain.koreanname.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
 import com.pbl.insaroad.domain.koreanname.dto.request.KoreanNameRequest;
 import com.pbl.insaroad.domain.koreanname.dto.response.KoreanNameResponse;
 import com.pbl.insaroad.domain.koreanname.service.KoreanNameService;
@@ -28,8 +32,8 @@ public class KoreanNameController {
       description = "생년월일과 성별을 입력받아 사주명리 기반으로 오행을 분석하고, " + "부족한 기운을 보완하는 한국 이름을 추천합니다.")
   @PostMapping("/korean-names/recommend")
   public ResponseEntity<BaseResponse<KoreanNameResponse>> recommendKoreanName(
-      @RequestBody KoreanNameRequest request) {
-    KoreanNameResponse response = koreanNameService.recommendName(request);
+      @RequestBody KoreanNameRequest request, @RequestBody CompleteRequest completeRequest) {
+    KoreanNameResponse response = koreanNameService.recommendName(request, completeRequest);
     return ResponseEntity.ok(BaseResponse.success("한국 이름 추천 성공", response));
   }
 }
