@@ -36,6 +36,7 @@ public class LocationResponse {
     return LocationResponse.builder()
         .id(location.getId())
         .name(location.getName())
+        .nameEn(location.getNameEn())
         .description(location.getDescription())
         .address(location.getAddress())
         .imageUrl(location.getImageUrl())
