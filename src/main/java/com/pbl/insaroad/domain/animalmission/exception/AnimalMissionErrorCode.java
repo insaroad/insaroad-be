@@ -1,6 +1,10 @@
+/* 
+ * Copyright (c) SKU PBL Team4 
+ */
 package com.pbl.insaroad.domain.animalmission.exception;
 
 import org.springframework.http.HttpStatus;
+
 import com.pbl.insaroad.global.exception.model.BaseErrorCode;
 
 import lombok.AllArgsConstructor;

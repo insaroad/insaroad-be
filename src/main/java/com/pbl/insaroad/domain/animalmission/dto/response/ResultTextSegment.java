@@ -1,3 +1,6 @@
+/* 
+ * Copyright (c) SKU PBL Team4 
+ */
 package com.pbl.insaroad.domain.animalmission.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
