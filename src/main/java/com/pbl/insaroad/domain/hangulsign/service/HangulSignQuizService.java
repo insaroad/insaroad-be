@@ -49,7 +49,8 @@ public class HangulSignQuizService {
 
   public AnswerResponse submitAnswer(Long quizId, AnswerRequest request) {
     // CompleteRequest 생성
-    CompleteRequest completeRequest = new CompleteRequest(request.getUserCode(), request.getCurrentLocationId());
+    CompleteRequest completeRequest =
+        new CompleteRequest(request.getUserCode(), request.getCurrentLocationId());
 
     // 사용자 조회
     User user =

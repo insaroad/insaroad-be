@@ -41,8 +41,7 @@ public class HangulSignQuizController {
   @Operation(summary = "퀴즈 정답 제출", description = "사용자가 선택한 답을 제출하고 정답 여부를 확인합니다.")
   @PostMapping("/{quizId}/answer")
   public ResponseEntity<BaseResponse<AnswerResponse>> submitAnswer(
-      @PathVariable Long quizId,
-      @Valid @RequestBody AnswerRequest answerRequest) {
+      @PathVariable Long quizId, @Valid @RequestBody AnswerRequest answerRequest) {
     AnswerResponse response = quizService.submitAnswer(quizId, answerRequest);
     return ResponseEntity.ok(BaseResponse.success("정답 제출 완료", response));
   }
