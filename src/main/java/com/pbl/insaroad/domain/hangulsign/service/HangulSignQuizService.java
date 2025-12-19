@@ -47,8 +47,10 @@ public class HangulSignQuizService {
     return quizMapper.toQuizResponse(quiz);
   }
 
-  public AnswerResponse submitAnswer(
-      Long quizId, AnswerRequest request, CompleteRequest completeRequest) {
+  public AnswerResponse submitAnswer(Long quizId, AnswerRequest request) {
+    // CompleteRequest 생성
+    CompleteRequest completeRequest = new CompleteRequest(request.getUserCode(), request.getCurrentLocationId());
+
     // 사용자 조회
     User user =
         userRepository
