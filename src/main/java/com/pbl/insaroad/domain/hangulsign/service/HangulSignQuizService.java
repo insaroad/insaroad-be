@@ -3,13 +3,12 @@
  */
 package com.pbl.insaroad.domain.hangulsign.service;
 
-import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
-import com.pbl.insaroad.domain.user.service.UserService;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
 import com.pbl.insaroad.domain.hangulsign.dto.request.AnswerRequest;
 import com.pbl.insaroad.domain.hangulsign.dto.request.QuizCreateRequest;
 import com.pbl.insaroad.domain.hangulsign.dto.response.AnswerResponse;
@@ -21,6 +20,7 @@ import com.pbl.insaroad.domain.hangulsign.mapper.HangulSignQuizMapper;
 import com.pbl.insaroad.domain.hangulsign.repository.HangulSignQuizRepository;
 import com.pbl.insaroad.domain.user.entity.User;
 import com.pbl.insaroad.domain.user.repository.UserRepository;
+import com.pbl.insaroad.domain.user.service.UserService;
 import com.pbl.insaroad.global.exception.CustomException;
 
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,8 @@ public class HangulSignQuizService {
     return quizMapper.toQuizResponse(quiz);
   }
 
-  public AnswerResponse submitAnswer(Long quizId, AnswerRequest request, CompleteRequest completeRequest) {
+  public AnswerResponse submitAnswer(
+      Long quizId, AnswerRequest request, CompleteRequest completeRequest) {
     // 사용자 조회
     User user =
         userRepository

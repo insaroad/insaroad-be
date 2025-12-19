@@ -3,9 +3,6 @@
  */
 package com.pbl.insaroad.domain.animalmission.service;
 
-import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
-import com.pbl.insaroad.domain.user.entity.User;
-import com.pbl.insaroad.domain.user.service.UserService;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +21,10 @@ import com.pbl.insaroad.domain.animalmission.dto.request.AnimalMissionSubmitRequ
 import com.pbl.insaroad.domain.animalmission.dto.response.AnimalResultResponse;
 import com.pbl.insaroad.domain.animalmission.entity.AnimalType;
 import com.pbl.insaroad.domain.animalmission.exception.AnimalMissionErrorCode;
+import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
+import com.pbl.insaroad.domain.user.entity.User;
 import com.pbl.insaroad.domain.user.repository.UserRepository;
+import com.pbl.insaroad.domain.user.service.UserService;
 import com.pbl.insaroad.global.exception.CustomException;
 
 import lombok.RequiredArgsConstructor;
@@ -49,7 +49,8 @@ public class AnimalMissionService {
 
   // 동물 미션 제출 처리 메서드
   @Transactional
-  public AnimalResultResponse submitAnimalMission(AnimalMissionSubmitRequest missionRequest,  CompleteRequest completeRequest) {
+  public AnimalResultResponse submitAnimalMission(
+      AnimalMissionSubmitRequest missionRequest, CompleteRequest completeRequest) {
     // 0. patternAnimals 중복 검증
     validateNoDuplicatePatternAnimals(missionRequest.getPatternAnimals());
 
