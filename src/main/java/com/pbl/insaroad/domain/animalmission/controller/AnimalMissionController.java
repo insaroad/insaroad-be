@@ -3,6 +3,7 @@
  */
 package com.pbl.insaroad.domain.animalmission.controller;
 
+import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,8 +34,9 @@ public class AnimalMissionController {
       description =
           "사용자의 선택(문양 2개, 입구 1개, 그림 1개)을 받아 최종 동물을 반환합니다. 동점일 경우 마지막 문항(그림) 선택을 결과로 반환합니다.")
   public BaseResponse<AnimalResultResponse> submitAnimalMission(
-      @Valid @RequestBody AnimalMissionSubmitRequest request) {
-    AnimalResultResponse result = animalMissionService.submitAnimalMission(request);
+      @Valid @RequestBody AnimalMissionSubmitRequest missionRequest,
+      @Valid @RequestBody CompleteRequest completeRequest) {
+    AnimalResultResponse result = animalMissionService.submitAnimalMission(missionRequest, completeRequest);
     return BaseResponse.success(result);
   }
 }

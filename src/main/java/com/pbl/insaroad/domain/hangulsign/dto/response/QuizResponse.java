@@ -29,4 +29,7 @@ public class QuizResponse {
 
   @Schema(description = "선택지 3", example = "김밥왕국")
   private String choice3;
+
+  @Schema(description = "정답 선택지 번호", example = "2")
+  private Integer correctChoice;
 }

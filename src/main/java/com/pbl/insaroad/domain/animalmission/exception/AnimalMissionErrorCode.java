@@ -15,7 +15,7 @@ import lombok.Getter;
 public enum AnimalMissionErrorCode implements BaseErrorCode {
   DUPLICATE_PATTERN_ANIMALS("ANIMAL_4001", "patternAnimals에 중복된 동물이 있습니다.", HttpStatus.BAD_REQUEST),
   USER_NOT_FOUND("ANIMAL_4002", "사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-  USER_NOT_STAGE_3("ANIMAL_4003", "사용자의 스테이지가 3이 아닙니다.", HttpStatus.BAD_REQUEST),
+  USER_NOT_STAGE_2("ANIMAL_4003", "사용자의 스테이지가 2가 아닙니다.", HttpStatus.BAD_REQUEST),
   ;
 
   private final String code;
