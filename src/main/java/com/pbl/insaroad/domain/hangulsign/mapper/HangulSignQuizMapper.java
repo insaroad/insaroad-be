@@ -21,6 +21,7 @@ public class HangulSignQuizMapper {
         .choice1(quiz.getChoice1())
         .choice2(quiz.getChoice2())
         .choice3(quiz.getChoice3())
+        .correctChoice(quiz.getCorrectChoice())
         .build();
   }
 
