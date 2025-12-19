@@ -3,6 +3,8 @@
  */
 package com.pbl.insaroad.domain.hangulsign.service;
 
+import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
+import com.pbl.insaroad.domain.user.service.UserService;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import com.pbl.insaroad.domain.hangulsign.entity.HangulSignQuiz;
 import com.pbl.insaroad.domain.hangulsign.exception.HangulSignQuizErrorCode;
 import com.pbl.insaroad.domain.hangulsign.mapper.HangulSignQuizMapper;
 import com.pbl.insaroad.domain.hangulsign.repository.HangulSignQuizRepository;
+import com.pbl.insaroad.domain.user.entity.User;
+import com.pbl.insaroad.domain.user.repository.UserRepository;
 import com.pbl.insaroad.global.exception.CustomException;
 
 import lombok.RequiredArgsConstructor;
@@ -30,6 +34,8 @@ public class HangulSignQuizService {
 
   private final HangulSignQuizRepository quizRepository;
   private final HangulSignQuizMapper quizMapper;
+  private final UserRepository userRepository;
+  private final UserService userService;
 
   @Transactional(readOnly = true)
   public QuizResponse getRandomQuiz() {
@@ -41,7 +47,18 @@ public class HangulSignQuizService {
     return quizMapper.toQuizResponse(quiz);
   }
 
-  public AnswerResponse submitAnswer(Long quizId, AnswerRequest request) {
+  public AnswerResponse submitAnswer(Long quizId, AnswerRequest request, CompleteRequest completeRequest) {
+    // 사용자 조회
+    User user =
+        userRepository
+            .findByCode(completeRequest.getUserCode())
+            .orElseThrow(() -> new CustomException(HangulSignQuizErrorCode.USER_NOT_FOUND));
+
+    // 사용자 스테이지 검증
+    if (user.getStage() != 3) {
+      throw new CustomException(HangulSignQuizErrorCode.USER_NOT_STAGE_3);
+    }
+
     // 퀴즈 조회
     HangulSignQuiz quiz =
         quizRepository
@@ -56,6 +73,8 @@ public class HangulSignQuizService {
     boolean isCorrect = quiz.getCorrectChoice().equals(request.getUserAnswer());
 
     String answerImageUrl = isCorrect ? quiz.getAnswerImageUrl() : null;
+
+    userService.completeGame(completeRequest);
 
     return quizMapper.toAnswerResponse(isCorrect, answerImageUrl);
   }

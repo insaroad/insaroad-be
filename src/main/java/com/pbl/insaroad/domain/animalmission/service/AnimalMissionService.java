@@ -3,6 +3,9 @@
  */
 package com.pbl.insaroad.domain.animalmission.service;
 
+import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
+import com.pbl.insaroad.domain.user.entity.User;
+import com.pbl.insaroad.domain.user.service.UserService;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +37,7 @@ public class AnimalMissionService {
   private static final Map<AnimalType, AnimalResultResponse> ANIMAL_RESULTS = new HashMap<>();
 
   private final UserRepository userRepository;
+  private final UserService userService;
 
   static {
     ANIMAL_RESULTS.put(AnimalType.TIGER, Tiger.CONTENT);
@@ -45,12 +49,23 @@ public class AnimalMissionService {
 
   // 동물 미션 제출 처리 메서드
   @Transactional
-  public AnimalResultResponse submitAnimalMission(AnimalMissionSubmitRequest request) {
+  public AnimalResultResponse submitAnimalMission(AnimalMissionSubmitRequest missionRequest,  CompleteRequest completeRequest) {
     // 0. patternAnimals 중복 검증
-    validateNoDuplicatePatternAnimals(request.getPatternAnimals());
+    validateNoDuplicatePatternAnimals(missionRequest.getPatternAnimals());
+
+    // 사용자 조회
+    User user =
+        userRepository
+            .findByCode(completeRequest.getUserCode())
+            .orElseThrow(() -> new CustomException(AnimalMissionErrorCode.USER_NOT_FOUND));
+
+    // 사용자 스테이지 검증
+    if (user.getStage() != 2) {
+      throw new CustomException(AnimalMissionErrorCode.USER_NOT_STAGE_2);
+    }
 
     // 1. 동물별 점수 집계
-    Map<AnimalType, Integer> scoreMap = calculateScores(request);
+    Map<AnimalType, Integer> scoreMap = calculateScores(missionRequest);
 
     // 2. 최고 점수 계산
     int maxScore = scoreMap.values().stream().mapToInt(Integer::intValue).max().orElse(0);
@@ -61,7 +76,7 @@ public class AnimalMissionService {
     // 4. 동점 처리: 2개 이상이면 paintingAnimal 반환
     AnimalType resultAnimal;
     if (countMaxScore >= 2) {
-      resultAnimal = request.getPaintingAnimal();
+      resultAnimal = missionRequest.getPaintingAnimal();
     } else {
       // 단일 최고 점수인 경우 해당 동물 반환
       resultAnimal =
@@ -69,8 +84,10 @@ public class AnimalMissionService {
               .filter(entry -> entry.getValue() == maxScore)
               .map(Map.Entry::getKey)
               .findFirst()
-              .orElse(request.getPaintingAnimal());
+              .orElse(missionRequest.getPaintingAnimal());
     }
+
+    userService.completeGame(completeRequest);
 
     return ANIMAL_RESULTS.get(resultAnimal);
   }
