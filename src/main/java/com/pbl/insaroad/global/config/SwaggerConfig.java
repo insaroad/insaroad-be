@@ -1,4 +1,11 @@
+/* 
+ * Copyright (c) SKU PBL Team4 
+ */
 package com.pbl.insaroad.global.config;
+
+import org.springdoc.core.models.GroupedOpenApi;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -7,21 +14,21 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
-import org.springdoc.core.models.GroupedOpenApi;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
     info =
-    @Info(
-        title = "🐾 Insaroad 명세서",
-        contact =
-        @Contact(name = "Insaroad", url = "https://danchu.site", email = "1030n@naver.com")),
+        @Info(
+            title = "🐾 Insaroad 명세서",
+            contact =
+                @Contact(
+                    name = "Insaroad",
+                    url = "https://danchu.site",
+                    email = "1030n@naver.com")),
     security = @SecurityRequirement(name = "Authorization"),
     servers = {
-        @Server(url = "https://api.danchu.site", description = "🚀 운영 서버"),
-        @Server(url = "http://localhost:8080", description = "🛠️ 로컬 서버")
+      @Server(url = "https://api.danchu.site", description = "🚀 운영 서버"),
+      @Server(url = "http://localhost:8080", description = "🛠️ 로컬 서버")
     })
 @SecurityScheme(
     name = "Authorization",
