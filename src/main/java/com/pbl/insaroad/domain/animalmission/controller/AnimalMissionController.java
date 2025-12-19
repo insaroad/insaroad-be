@@ -3,7 +3,6 @@
  */
 package com.pbl.insaroad.domain.animalmission.controller;
 
-import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pbl.insaroad.domain.animalmission.dto.request.AnimalMissionSubmitRequest;
 import com.pbl.insaroad.domain.animalmission.dto.response.AnimalResultResponse;
 import com.pbl.insaroad.domain.animalmission.service.AnimalMissionService;
+import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
 import com.pbl.insaroad.global.response.BaseResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +36,8 @@ public class AnimalMissionController {
   public BaseResponse<AnimalResultResponse> submitAnimalMission(
       @Valid @RequestBody AnimalMissionSubmitRequest missionRequest,
       @Valid @RequestBody CompleteRequest completeRequest) {
-    AnimalResultResponse result = animalMissionService.submitAnimalMission(missionRequest, completeRequest);
+    AnimalResultResponse result =
+        animalMissionService.submitAnimalMission(missionRequest, completeRequest);
     return BaseResponse.success(result);
   }
 }

@@ -3,7 +3,6 @@
  */
 package com.pbl.insaroad.domain.hangulsign.controller;
 
-import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
 import com.pbl.insaroad.domain.hangulsign.dto.request.AnswerRequest;
 import com.pbl.insaroad.domain.hangulsign.dto.response.AnswerResponse;
 import com.pbl.insaroad.domain.hangulsign.dto.response.QuizResponse;
