@@ -6,8 +6,8 @@ package com.pbl.insaroad.domain.location.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pbl.insaroad.domain.location.dto.LocationResponse;
 import com.pbl.insaroad.domain.location.dto.request.LocationRequest.CreateLocationRequest;
+import com.pbl.insaroad.domain.location.dto.response.LocationResponse;
 import com.pbl.insaroad.domain.location.entity.Location;
 import com.pbl.insaroad.domain.location.exception.LocationErrorCode;
 import com.pbl.insaroad.domain.location.repository.LocationRepository;
@@ -33,6 +33,7 @@ public class LocationServiceImpl implements LocationService {
         locationRepository.save(
             Location.builder()
                 .name(request.getName())
+                .nameEn(request.getNameEn())
                 .description(request.getDescription())
                 .address(request.getAddress())
                 .imageUrl(request.getImageUrl())

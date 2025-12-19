@@ -6,7 +6,7 @@ package com.pbl.insaroad.domain.game.dto.response;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.pbl.insaroad.domain.location.dto.LocationResponse;
+import com.pbl.insaroad.domain.location.dto.response.LocationResponse;
 
 import lombok.Builder;
 import lombok.Getter;

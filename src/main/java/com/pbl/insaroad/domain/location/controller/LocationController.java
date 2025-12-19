@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.pbl.insaroad.domain.game.dto.request.GameRequest;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.UnvisitedResponse;
-import com.pbl.insaroad.domain.location.dto.LocationResponse;
 import com.pbl.insaroad.domain.location.dto.request.LocationRequest;
+import com.pbl.insaroad.domain.location.dto.response.LocationResponse;
 import com.pbl.insaroad.global.response.BaseResponse;
 
 import io.swagger.v3.oas.annotations.Operation;

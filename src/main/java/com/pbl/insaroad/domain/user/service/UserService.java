@@ -20,7 +20,7 @@ import com.pbl.insaroad.domain.game.dto.response.GameResponse.StartResponse;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.UnvisitedResponse;
 import com.pbl.insaroad.domain.game.exception.GameErrorCode;
 import com.pbl.insaroad.domain.game.mapper.GameMapper;
-import com.pbl.insaroad.domain.location.dto.LocationResponse;
+import com.pbl.insaroad.domain.location.dto.response.LocationResponse;
 import com.pbl.insaroad.domain.location.entity.Location;
 import com.pbl.insaroad.domain.location.repository.LocationRepository;
 import com.pbl.insaroad.domain.ticket.entity.Ticket;

@@ -17,6 +17,7 @@ public class LocationRequest {
   public static class CreateLocationRequest {
 
     @NotBlank private String name;
+    private String nameEn;
 
     private String description;
     private String address;

@@ -8,7 +8,7 @@ import java.util.List;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.CompleteResponse;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.FinishResponse;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.GameProgressResponse;
-import com.pbl.insaroad.domain.location.dto.LocationResponse;
+import com.pbl.insaroad.domain.location.dto.response.LocationResponse;
 import com.pbl.insaroad.domain.location.entity.Location;
 import com.pbl.insaroad.domain.ticket.entity.Ticket;
 import com.pbl.insaroad.domain.user.entity.User;

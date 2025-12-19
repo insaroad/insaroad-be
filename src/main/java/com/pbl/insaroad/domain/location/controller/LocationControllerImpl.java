@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pbl.insaroad.domain.game.dto.request.GameRequest;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.UnvisitedResponse;
-import com.pbl.insaroad.domain.location.dto.LocationResponse;
 import com.pbl.insaroad.domain.location.dto.request.LocationRequest.CreateLocationRequest;
+import com.pbl.insaroad.domain.location.dto.response.LocationResponse;
 import com.pbl.insaroad.domain.location.service.LocationService;
 import com.pbl.insaroad.domain.user.service.UserService;
 import com.pbl.insaroad.global.response.BaseResponse;
