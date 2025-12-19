@@ -30,15 +30,26 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @Query(
       """
-      select t
-      from Ticket t
-      where t.userId = :userId
-        and t.usedAt is null
-        and (t.expiresAt is null or t.expiresAt >= :today)
-      order by t.createdAt desc
-      """)
+          select t
+          from Ticket t
+          where t.userId = :userId
+            and t.usedAt is null
+            and (t.expiresAt is null or t.expiresAt >= :today)
+          order by t.createdAt desc
+          """)
   List<Ticket> findLatestValidTicketForUpdate(
       @Param("userId") Long userId, @Param("today") LocalDate today, Pageable pageable);
 
   Optional<Ticket> findTop1ByUserIdOrderByCreatedAtDesc(Long userId);
+
+  @Query(
+      """
+        SELECT t
+        FROM Ticket t
+        WHERE t.userId = :userId
+          AND t.expiresAt >= :today
+        ORDER BY t.createdAt DESC
+      """)
+  List<Ticket> findLatestValidTicket(
+      @Param("userId") Long userId, @Param("today") LocalDate today, Pageable pageable);
 }

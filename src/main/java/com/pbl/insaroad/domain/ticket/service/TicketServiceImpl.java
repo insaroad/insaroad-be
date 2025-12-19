@@ -6,6 +6,7 @@ package com.pbl.insaroad.domain.ticket.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -117,5 +118,14 @@ public class TicketServiceImpl implements TicketService {
     return userRepository
         .findByCode(userCode)
         .orElseThrow(() -> new CustomException(GameErrorCode.USER_NOT_FOUND));
+  }
+
+  @Override
+  public Optional<Ticket> findLatestValidTicket(Long userId) {
+
+    List<Ticket> tickets =
+        ticketRepository.findLatestValidTicket(userId, LocalDate.now(), PageRequest.of(0, 1));
+
+    return tickets.isEmpty() ? Optional.empty() : Optional.of(tickets.getFirst());
   }
 }

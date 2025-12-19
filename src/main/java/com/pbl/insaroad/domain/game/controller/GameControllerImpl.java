@@ -7,13 +7,12 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
-import com.pbl.insaroad.domain.game.dto.request.GameRequest.UnvisitedRequest;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.GameProgressResponse;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.StartResponse;
-import com.pbl.insaroad.domain.game.dto.response.GameResponse.UnvisitedResponse;
 import com.pbl.insaroad.domain.user.service.UserService;
 import com.pbl.insaroad.global.response.BaseResponse;
 
@@ -36,15 +35,13 @@ public class GameControllerImpl implements GameController {
   }
 
   @Override
-  public ResponseEntity<BaseResponse<UnvisitedResponse>> unvisited(
-      @RequestBody @Valid UnvisitedRequest request) {
-    return ResponseEntity.ok(
-        BaseResponse.success(userService.getUnvisitedLocations(request.getUserCode())));
-  }
-
-  @Override
   public ResponseEntity<BaseResponse<GameProgressResponse>> complete(
       @RequestBody @Valid CompleteRequest request) {
     return ResponseEntity.ok(BaseResponse.success(userService.completeGame(request)));
+  }
+
+  @Override
+  public BaseResponse<GameProgressResponse> getProgress(@RequestParam String userCode) {
+    return BaseResponse.success(userService.getGameProgress(userCode));
   }
 }

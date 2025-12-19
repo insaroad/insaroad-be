@@ -19,6 +19,7 @@ import com.pbl.insaroad.domain.game.dto.response.GameResponse.GameProgressRespon
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.StartResponse;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.UnvisitedResponse;
 import com.pbl.insaroad.domain.game.exception.GameErrorCode;
+import com.pbl.insaroad.domain.game.mapper.GameMapper;
 import com.pbl.insaroad.domain.location.dto.LocationResponse;
 import com.pbl.insaroad.domain.location.entity.Location;
 import com.pbl.insaroad.domain.location.repository.LocationRepository;
@@ -128,7 +129,11 @@ public class UserService {
     int currentStage = user.getStage();
 
     if (currentStage >= 3) {
-      // stage3 완료로 간주하고 finish 응답(티켓은 issueNewTicket이 막아줌)
+
+      if (!user.isCompleted()) {
+        user.completeMission();
+      }
+
       Ticket ticket = ticketService.issueNewTicket(user.getId());
       FinishResponse finish =
           FinishResponse.builder()
@@ -151,6 +156,24 @@ public class UserService {
             .build();
 
     return GameProgressResponse.builder().completed(false).complete(complete).finish(null).build();
+  }
+
+  @Transactional(readOnly = true)
+  public GameProgressResponse getGameProgress(String userCode) {
+
+    User user = getUserByCodeOrThrow(userCode);
+
+    if (!user.isCompleted()) {
+      return GameMapper.toInProgress(user, findUnvisitedLocations(user));
+    }
+
+    return ticketService
+        .findLatestValidTicket(user.getId())
+        .map(
+            ticket ->
+                GameMapper.toCompletedWithTicket(
+                    user, ticket, qrPayloadFactory.create(ticket.getToken())))
+        .orElseGet(GameMapper::toCompletedWithoutTicket);
   }
 
   /* =========================

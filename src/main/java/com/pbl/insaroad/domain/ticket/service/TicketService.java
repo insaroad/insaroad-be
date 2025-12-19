@@ -4,6 +4,7 @@
 package com.pbl.insaroad.domain.ticket.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.pbl.insaroad.domain.ticket.dto.request.TicketRequest.ConsumeTicketRequest;
 import com.pbl.insaroad.domain.ticket.dto.request.TicketRequest.VerifyTicketRequest;
@@ -45,4 +46,6 @@ public interface TicketService {
   Ticket issueNewTicket(Long userId);
 
   List<TicketItemResponse> getTicketsByUserCode(String userCode);
+
+  Optional<Ticket> findLatestValidTicket(Long userId);
 }

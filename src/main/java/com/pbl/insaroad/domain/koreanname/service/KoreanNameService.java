@@ -27,7 +27,7 @@ public class KoreanNameService {
   private final KoreanNameAiClient koreanNameAiClient;
   private final UserService userService;
 
-  @Transactional(readOnly = true)
+  @Transactional
   public KoreanNameResponse recommendName(KoreanNameRequest request) {
     String systemPrompt =
         """

@@ -13,10 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.pbl.insaroad.domain.game.dto.request.GameRequest.CompleteRequest;
-import com.pbl.insaroad.domain.game.dto.request.GameRequest.UnvisitedRequest;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.GameProgressResponse;
 import com.pbl.insaroad.domain.game.dto.response.GameResponse.StartResponse;
-import com.pbl.insaroad.domain.game.dto.response.GameResponse.UnvisitedResponse;
 import com.pbl.insaroad.global.response.BaseResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,16 +34,9 @@ public interface GameController {
   @GetMapping("/start")
   BaseResponse<StartResponse> resume(@RequestParam("userCode") String userCode);
 
-  @PostMapping("/unvisited")
-  @Operation(
-      summary = "미방문 Location 전체 조회",
-      description = "사용자 기준으로 아직 방문하지 않은 Location 목록 전체를 반환합니다.")
-  ResponseEntity<BaseResponse<UnvisitedResponse>> unvisited(
-      @RequestBody @Valid UnvisitedRequest request);
-
   @PostMapping("/complete")
   @Operation(
-      summary = "게임 진행/완료 처리",
+      summary = "[개발자] 게임 진행/완료 처리",
       description =
           """
               현재 Location 방문을 처리합니다.
@@ -58,4 +49,8 @@ public interface GameController {
               """)
   ResponseEntity<BaseResponse<GameProgressResponse>> complete(
       @RequestBody @Valid CompleteRequest request);
+
+  @Operation(summary = "[Web] 정보 조회", description = "사용자 코드로 완주 여부에 따라 다른 화면 정보를 반환합니다.")
+  @GetMapping("/progress")
+  BaseResponse<GameProgressResponse> getProgress(@RequestParam String userCode);
 }
