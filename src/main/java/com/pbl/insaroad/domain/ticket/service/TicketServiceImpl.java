@@ -5,13 +5,17 @@ package com.pbl.insaroad.domain.ticket.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pbl.insaroad.domain.game.exception.GameErrorCode;
 import com.pbl.insaroad.domain.ticket.dto.request.TicketRequest.ConsumeTicketRequest;
 import com.pbl.insaroad.domain.ticket.dto.request.TicketRequest.VerifyTicketRequest;
 import com.pbl.insaroad.domain.ticket.dto.response.TicketResponse.ConsumeTicketResponse;
+import com.pbl.insaroad.domain.ticket.dto.response.TicketResponse.TicketItemResponse;
 import com.pbl.insaroad.domain.ticket.dto.response.TicketResponse.VerifyTicketResponse;
 import com.pbl.insaroad.domain.ticket.entity.Ticket;
 import com.pbl.insaroad.domain.ticket.exception.TicketErrorCode;
@@ -80,17 +84,38 @@ public class TicketServiceImpl implements TicketService {
     }
   }
 
-  private Ticket issueNewTicket(Long userId) {
-    try {
-      String token = tokenGenerator.generate();
+  @Override
+  public Ticket issueNewTicket(Long userId) {
 
-      Ticket ticket = ticketMapper.toEntity(userId, token, LocalDate.now().plusDays(7));
+    List<Ticket> latestValid =
+        ticketRepository.findLatestValidTicketForUpdate(
+            userId, LocalDate.now(), PageRequest.of(0, 1));
 
-      return ticketRepository.save(ticket);
-
-    } catch (Exception e) {
-      log.error("[MISSION] ticket issue failed userId={}", userId, e);
-      throw e;
+    if (!latestValid.isEmpty()) {
+      return latestValid.getFirst();
     }
+
+    String token = tokenGenerator.generate();
+    Ticket ticket = ticketMapper.toEntity(userId, token, LocalDate.now().plusDays(7));
+    return ticketRepository.save(ticket);
+  }
+
+  @Override
+  public List<TicketItemResponse> getTicketsByUserCode(String userCode) {
+    User user = getUserByCodeOrThrow(userCode);
+
+    return ticketRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId()).stream()
+        .map(ticketMapper::toItemResponse)
+        .toList();
+  }
+
+  private User getUserByCodeOrThrow(String userCode) {
+    if (userCode == null || userCode.isBlank()) {
+      throw new CustomException(GameErrorCode.USER_CODE_REQUIRED);
+    }
+
+    return userRepository
+        .findByCode(userCode)
+        .orElseThrow(() -> new CustomException(GameErrorCode.USER_NOT_FOUND));
   }
 }

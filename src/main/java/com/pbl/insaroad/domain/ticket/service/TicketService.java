@@ -3,10 +3,14 @@
  */
 package com.pbl.insaroad.domain.ticket.service;
 
+import java.util.List;
+
 import com.pbl.insaroad.domain.ticket.dto.request.TicketRequest.ConsumeTicketRequest;
 import com.pbl.insaroad.domain.ticket.dto.request.TicketRequest.VerifyTicketRequest;
 import com.pbl.insaroad.domain.ticket.dto.response.TicketResponse.ConsumeTicketResponse;
+import com.pbl.insaroad.domain.ticket.dto.response.TicketResponse.TicketItemResponse;
 import com.pbl.insaroad.domain.ticket.dto.response.TicketResponse.VerifyTicketResponse;
+import com.pbl.insaroad.domain.ticket.entity.Ticket;
 
 public interface TicketService {
 
@@ -37,4 +41,8 @@ public interface TicketService {
    * @return 티켓 사용 처리 결과 응답
    */
   ConsumeTicketResponse consumeTicket(ConsumeTicketRequest request);
+
+  Ticket issueNewTicket(Long userId);
+
+  List<TicketItemResponse> getTicketsByUserCode(String userCode);
 }

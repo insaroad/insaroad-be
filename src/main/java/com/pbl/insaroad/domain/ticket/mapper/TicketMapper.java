@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import org.springframework.stereotype.Component;
 
 import com.pbl.insaroad.domain.ticket.dto.response.TicketResponse.ConsumeTicketResponse;
+import com.pbl.insaroad.domain.ticket.dto.response.TicketResponse.TicketItemResponse;
 import com.pbl.insaroad.domain.ticket.dto.response.TicketResponse.VerifyTicketResponse;
 import com.pbl.insaroad.domain.ticket.entity.Ticket;
 import com.pbl.insaroad.domain.ticket.util.TicketQrPayloadFactory;
@@ -57,6 +58,21 @@ public class TicketMapper {
         .consumed(consumed)
         .ticketId(ticket.getId())
         .qrPayload(qrPayloadFactory.create(ticket.getToken()))
+        .usedAt(ticket.getUsedAt())
+        .expiresAt(ticket.getExpiresAt())
+        .build();
+  }
+
+  public TicketItemResponse toItemResponse(Ticket ticket) {
+
+    boolean expired =
+        ticket.getExpiresAt() != null && ticket.getExpiresAt().isBefore(LocalDate.now());
+
+    return TicketItemResponse.builder()
+        .ticketId(ticket.getId())
+        .token(ticket.getToken())
+        .qrPayload(qrPayloadFactory.create(ticket.getToken()))
+        .issuedAt(ticket.getCreatedAt())
         .usedAt(ticket.getUsedAt())
         .expiresAt(ticket.getExpiresAt())
         .build();
