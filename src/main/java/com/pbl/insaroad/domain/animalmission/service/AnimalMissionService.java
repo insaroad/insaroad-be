@@ -49,11 +49,12 @@ public class AnimalMissionService {
 
   // 동물 미션 제출 처리 메서드
   @Transactional
-  public AnimalResultResponse submitAnimalMission(
-      AnimalMissionSubmitRequest missionRequest, CompleteRequest completeRequest) {
+  public AnimalResultResponse submitAnimalMission(AnimalMissionSubmitRequest request) {
     // 0. patternAnimals 중복 검증
-    validateNoDuplicatePatternAnimals(missionRequest.getPatternAnimals());
+    validateNoDuplicatePatternAnimals(request.getPatternAnimals());
 
+    CompleteRequest completeRequest =
+        new CompleteRequest(request.getUserCode(), request.getCurrentLocationId());
     // 사용자 조회
     User user =
         userRepository
@@ -66,7 +67,7 @@ public class AnimalMissionService {
     }
 
     // 1. 동물별 점수 집계
-    Map<AnimalType, Integer> scoreMap = calculateScores(missionRequest);
+    Map<AnimalType, Integer> scoreMap = calculateScores(request);
 
     // 2. 최고 점수 계산
     int maxScore = scoreMap.values().stream().mapToInt(Integer::intValue).max().orElse(0);
@@ -77,7 +78,7 @@ public class AnimalMissionService {
     // 4. 동점 처리: 2개 이상이면 paintingAnimal 반환
     AnimalType resultAnimal;
     if (countMaxScore >= 2) {
-      resultAnimal = missionRequest.getPaintingAnimal();
+      resultAnimal = request.getPaintingAnimal();
     } else {
       // 단일 최고 점수인 경우 해당 동물 반환
       resultAnimal =
@@ -85,7 +86,7 @@ public class AnimalMissionService {
               .filter(entry -> entry.getValue() == maxScore)
               .map(Map.Entry::getKey)
               .findFirst()
-              .orElse(missionRequest.getPaintingAnimal());
+              .orElse(request.getPaintingAnimal());
     }
 
     userService.completeGame(completeRequest);
